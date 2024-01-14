@@ -5,6 +5,7 @@ local finders = require "telescope.finders"
 local conf = require("telescope.config").values
 local actions = require "telescope.actions"
 local action_state = require "telescope.actions.state"
+local harpoon = require "harpoon"
 
 function M.change_project(projects)
   pickers.new({}, {
@@ -27,7 +28,11 @@ function M.change_project(projects)
         vim.api.nvim_set_current_dir(project_location)
         require("nvim-tree.api").tree.change_root(project_location)
         local win_handle = vim.api.nvim_get_current_win()
-        require("nvim-tree.api").tree.open()
+        if harpoon:list():length() == 0 then
+          require("nvim-tree.api").tree.open()
+        else
+          harpoon:list():select(1)
+        end
         local tree_handle = vim.api.nvim_get_current_win()
         if win_handle ~= tree_handle then
           vim.api.nvim_win_close(win_handle, false)
