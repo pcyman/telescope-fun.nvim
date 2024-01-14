@@ -10,5 +10,8 @@ end
 M.change_project = function()
   require('telescopefun.change_project').change_project(Projects)
 end
+--M.debug =  function()
+  --require('telescopefun.change_project').get_project_state()
+--end
 
 return M

@@ -6,7 +6,34 @@ local conf = require("telescope.config").values
 local actions = require "telescope.actions"
 local action_state = require "telescope.actions.state"
 
+local function get_project_state()
+  local tabs = vim.api.nvim_list_tabpages()
+  local files = {}
+  for _, tab in pairs(tabs) do
+    local win = vim.api.nvim_tabpage_get_win(tab)
+    local buf = vim.api.nvim_win_get_buf(win)
+    local file = vim.api.nvim_buf_get_name(buf)
+    local line = vim.fn.line('.', win)
+    table.insert(files, {
+      file = file,
+      line = line,
+    })
+  end
+  return files
+end
+
+local function save_current_state()
+  local current_state = get_project_state()
+  local dir = vim.env.HOME .. "/.local/telescopefun" .. vim.fn.getcwd(0)
+  vim.api.nvim_command("!mkdir -p " .. dir)
+  vim.api.nvim_command("!echo '" .. vim.json.encode(current_state) .. "' >> " .. dir .. "/state.txt")
+end
+
+local function load_state()
+end
+
 function M.change_project(projects)
+  save_current_state()
   pickers.new({}, {
     prompt_title = "Projects",
     finder = finders.new_table {
